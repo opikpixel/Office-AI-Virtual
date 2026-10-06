@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kantor AI - Virtual Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-dark: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --accent-cyan: #38bdf8;
+            --accent-yellow: #facc15;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 16px;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .control-panel {
+            margin-bottom: 24px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .office-grid {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-bottom: 24px;
+        }
+
+        .desk {
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Status Styling */
+        .desk.idle {
+            border-color: var(--border);
+        }
+        .desk.working {
+            border-color: var(--accent-yellow);
+            background: linear-gradient(180deg, rgba(250, 204, 21, 0.05) 0%, var(--surface) 100%);
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.15);
+            animation: pulse-border 1.5s infinite;
+        }
+        .desk.done {
+            border-color: var(--accent-green);
+            background: linear-gradient(180deg, rgba(74, 222, 128, 0.05) 0%, var(--surface) 100%);
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(250, 204, 21, 0.4); }
+            50% { border-color: rgba(250, 204, 21, 1); }
+            100% { border-color: rgba(250, 204, 21, 0.4); }
+        }
+
+        .avatar {
+            font-size: 40px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+        }
+
+        .desk h3 {
+            margin: 0 0 4px 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .role-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .desk.working .status-badge {
+            background: rgba(250, 204, 21, 0.15);
+            color: var(--accent-yellow);
+        }
+        .desk.done .status-badge {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--accent-green);
+        }
+
+        .terminal-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .terminal-header {
+            background-color: #111827;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #ef4444; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-green { background-color: #10b981; }
+
+        .terminal-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        #log {
+            padding: 16px;
+            height: 220px;
+            overflow-y: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            background-color: #0b0f19;
+        }
+
+        .log-entry {
+            margin-bottom: 6px;
+            border-left: 2px solid var(--accent-cyan);
+            padding-left: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>VIRTUAL OFFICE AI</h1>
+        <p>Sistem Pemantauan Alur Kerja Agen Multi-Otononom</p>
+    </header>
+
+    <div class="control-panel">
+        <button onclick="kirimTugas()">🚀 Jalankan Proyek Lampu Lalu Lintas</button>
+    </div>
+
+    <div class="office-grid">
+        <!-- Meja Coder -->
+        <div id="desk-coder" class="desk idle">
+            <div class="avatar">👨‍💻</div>
+            <h3>Python Developer</h3>
+            <div class="role-desc">Menulis logika sistem</div>
+            <div id="badge-coder" class="status-badge">💤 Tidur</div>
+        </div>
+
+        <!-- Meja Reviewer -->
+        <div id="desk-reviewer" class="desk idle">
+            <div class="avatar">🕵️‍♂️</div>
+            <h3>Code Reviewer</h3>
+            <div class="role-desc">Inspeksi & refaktorisasi</div>
+            <div id="badge-reviewer" class="status-badge">💤 Tidur</div>
+        </div>
+    </div>
+
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+            <span class="terminal-title">live-stream-activity.log</span>
+        </div>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws/kantor");
+        const logDiv = document.getElementById("log");
+        
+        const deskCoder = document.getElementById("desk-coder");
+        const deskReviewer = document.getElementById("desk-reviewer");
+        const badgeCoder = document.getElementById("badge-coder");
+        const badgeReviewer = document.getElementById("badge-reviewer");
+
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            
+            // Tambahkan log baru ke terminal
+            logDiv.innerHTML += `<div class="log-entry"><b>[${data.agen}]</b> ${data.pesan}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+
+            // Logika Perubahan Visual Meja Coder
+            if (data.agen === "Coder" && data.status === "lembur") {
+                setDeskState(deskCoder, badgeCoder, "working", "⚡ Sedang Koding...");
+            }
+            
+            // Logika Perubahan Visual Meja Reviewer
+            if (data.agen === "Reviewer" && data.status === "lembur") {
+                setDeskState(deskCoder, badgeCoder, "done", "✅ Selesai");
+                setDeskState(deskReviewer, badgeReviewer, "working", "🔍 Memeriksa Kode...");
+            }
+            
+            // Logika Selesai Keseluruhan
+            if (data.agen === "Semua" && data.status === "selesai") {
+                setDeskState(deskReviewer, badgeReviewer, "done", "✅ Selesai");
+            }
+        };
+
+        function setDeskState(deskElement, badgeElement, state, text) {
+            deskElement.className = `desk ${state}`;
+            badgeElement.innerText = text;
+        }
+
+        function kirimTugas() {
+            // Reset status visual ke awal
+            setDeskState(deskCoder, badgeCoder, "idle", "⏳ Menunggu...");
+            setDeskState(deskReviewer, badgeReviewer, "idle", "⏳ Menunggu...");
+            
+            logDiv.innerHTML += `<div class="log-entry" style="border-color: var(--accent-yellow);"><b>[Sistem]</b> Mengirimkan tugas baru ke server...</div>`;
+            
+            ws.send("Buatkan skrip Python lampu lalu lintas menggunakan pendekatan state machine.");
+        }
+    </script>
+</body>
+</html>
